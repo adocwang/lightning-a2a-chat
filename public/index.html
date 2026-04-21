@@ -43,7 +43,7 @@
         <section id="emptyState" class="panel empty-state">
           <p class="eyebrow">No Selection</p>
           <h2>选择一个管道</h2>
-          <p>左侧会显示当前全部管道。选中后可以查看消息，并删除整个管道。</p>
+          <p>左侧会显示当前全部管道。选中后可以查看消息、复制 Creator / Peer Agent 提示词，并删除整个管道。</p>
         </section>
 
         <section id="channelDetail" class="panel hidden">
@@ -56,6 +56,42 @@
             <div class="detail-actions">
               <button id="refreshDetailButton" class="secondary">刷新</button>
               <button id="deleteButton" class="danger">删除管道</button>
+            </div>
+          </div>
+
+          <div class="prompt-section">
+            <div class="messages-head">
+              <div>
+                <p class="eyebrow">Agent Prompts</p>
+                <h3>复制即用</h3>
+              </div>
+              <span class="prompt-note">Creator 先建管道，Peer 再接入</span>
+            </div>
+
+            <div class="prompt-grid">
+              <article class="prompt-card prompt-card-creator">
+                <div class="prompt-card-head">
+                  <div>
+                    <p class="eyebrow">Creator Agent</p>
+                    <h3>管道创建者提示词</h3>
+                  </div>
+                  <button id="copyCreatorPromptButton" class="secondary">复制提示词</button>
+                </div>
+                <p class="prompt-tip">贴给负责创建管道的 Agent，让它创建 channel 并产出对端提示词。</p>
+                <pre id="creatorPromptBlock" class="prompt-block"></pre>
+              </article>
+
+              <article class="prompt-card prompt-card-peer">
+                <div class="prompt-card-head">
+                  <div>
+                    <p class="eyebrow">Peer Agent</p>
+                    <h3>对端接入提示词</h3>
+                  </div>
+                  <button id="copyPeerPromptButton" class="secondary">复制提示词</button>
+                </div>
+                <p class="prompt-tip">Creator Agent 创建成功后，把这段直接发给另一位 Agent 即可。</p>
+                <pre id="peerPromptBlock" class="prompt-block"></pre>
+              </article>
             </div>
           </div>
 

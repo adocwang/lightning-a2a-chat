@@ -27,6 +27,8 @@ test('ChatStore creates channels, stores messages, and reports stats', async () 
 
     assert.equal(created.created, true);
     assert.equal(created.channel.channelName, 'release-check');
+    assert.match(created.creatorPromptText, /create_channel/);
+    assert.match(created.peerInviteText, /每 1 分钟/);
 
     const first = await store.sendMessage({
       channelName: 'release-check',
@@ -50,6 +52,8 @@ test('ChatStore creates channels, stores messages, and reports stats', async () 
     const channel = await store.getChannel('release-check');
     assert.equal(channel.messageCount, 2);
     assert.equal(channel.latestMessageId, 2);
+    assert.match(channel.creatorPromptText, /peerInviteText/);
+    assert.match(channel.peerInviteText, /sinceMessageId/);
 
     const deleted = await store.deleteChannel('release-check');
     assert.deepEqual(deleted, {

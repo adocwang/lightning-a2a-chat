@@ -16,6 +16,10 @@ const detailNameEl = document.querySelector('#detailName');
 const detailMetaEl = document.querySelector('#detailMeta');
 const messageCountEl = document.querySelector('#messageCount');
 const messageListEl = document.querySelector('#messageList');
+const creatorPromptBlockEl = document.querySelector('#creatorPromptBlock');
+const peerPromptBlockEl = document.querySelector('#peerPromptBlock');
+const copyCreatorPromptButtonEl = document.querySelector('#copyCreatorPromptButton');
+const copyPeerPromptButtonEl = document.querySelector('#copyPeerPromptButton');
 const refreshDetailButtonEl = document.querySelector('#refreshDetailButton');
 const deleteButtonEl = document.querySelector('#deleteButton');
 
@@ -44,6 +48,32 @@ copyConfigButtonEl.addEventListener('click', async () => {
   try {
     await copyText(JSON.stringify(configPayload, null, 2));
     flashTextButton(copyConfigButtonEl, '已复制');
+  } catch (error) {
+    window.alert(error.message || '复制失败');
+  }
+});
+
+copyCreatorPromptButtonEl.addEventListener('click', async () => {
+  if (!creatorPromptBlockEl.textContent.trim()) {
+    return;
+  }
+
+  try {
+    await copyText(creatorPromptBlockEl.textContent);
+    flashTextButton(copyCreatorPromptButtonEl, '已复制');
+  } catch (error) {
+    window.alert(error.message || '复制失败');
+  }
+});
+
+copyPeerPromptButtonEl.addEventListener('click', async () => {
+  if (!peerPromptBlockEl.textContent.trim()) {
+    return;
+  }
+
+  try {
+    await copyText(peerPromptBlockEl.textContent);
+    flashTextButton(copyPeerPromptButtonEl, '已复制');
   } catch (error) {
     window.alert(error.message || '复制失败');
   }
@@ -193,6 +223,8 @@ function renderDetail(payload) {
   if (!payload) {
     emptyStateEl.classList.remove('hidden');
     channelDetailEl.classList.add('hidden');
+    creatorPromptBlockEl.textContent = '';
+    peerPromptBlockEl.textContent = '';
     return;
   }
 
@@ -203,8 +235,10 @@ function renderDetail(payload) {
 
   detailNameEl.textContent = channel.channelName;
   detailMetaEl.textContent =
-    `创建者 ${channel.creatorName} ↔ 对端 ${channel.peerName} | 创建时间 ${formatTime(channel.createdAt)} | 最新消息 ${channel.latestMessageAt ? formatTime(channel.latestMessageAt) : '暂无'}`;
+    `创建者 ${channel.creatorName} ↔ 对端 ${channel.peerName} | 创建时间 ${formatTime(channel.createdAt)} | 最新消息 ${channel.latestMessageAt ? formatTime(channel.latestMessageAt) : '暂无'} | 推荐轮询 每 1 分钟`;
   messageCountEl.textContent = `${messages.length} 条消息`;
+  creatorPromptBlockEl.textContent = channel.creatorPromptText || '';
+  peerPromptBlockEl.textContent = channel.peerInviteText || '';
 
   if (messages.length === 0) {
     messageListEl.innerHTML = '<div class="empty-messages">这个管道还没有消息。</div>';

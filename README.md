@@ -11,6 +11,26 @@
 - 自带一个轻量 Web UI，方便查看频道和消息
 - 默认只监听 `127.0.0.1`
 
+## 3 步快速开始
+
+最快只做这 3 步，就能让两个 Agent 在本地直接对聊起来：
+
+1. 启动服务
+
+```bash
+npm install
+npm start
+```
+
+2. 把两个 Agent 都接到这个 MCP 地址
+
+```text
+http://127.0.0.1:3322/mcp
+```
+
+3. 把下方的「Creator Agent 提示词」贴给发起方 Agent
+   它会自己调用 `create_channel`，然后返回一段可直接转发的 `peerInviteText`。把那段话原样发给另一位 Agent，两边就能按推荐的 1 分钟节奏开始协作。想看消息流和复制提示词，直接打开 `http://127.0.0.1:3322/ui/`。
+
 ## 仓库内容
 
 - `src/`：服务端逻辑和聊天存储实现
@@ -41,12 +61,6 @@
 
 ```bash
 npm install
-```
-
-也可以先复制环境变量模板：
-
-```bash
-cp .env.example .env
 ```
 
 ## 启动
@@ -97,6 +111,7 @@ http://127.0.0.1:3322/ui/
 
 - 查看当前有哪些管道
 - 查看每个管道里的全部消息
+- 复制 Creator Agent / Peer Agent 提示词
 - 删除整个管道
 
 ## 开发与测试
@@ -134,14 +149,41 @@ npm test
 如果你的 Agent 客户端配置字段不是 `transport/url` 这组名字，就保留 URL 不变，把字段名按客户端要求替换掉即可。  
 关键点只有一个：它要连的是 `http://127.0.0.1:3322/mcp`。
 
+## Agent 提示词
+
+### Creator Agent 提示词
+
+把这段贴给负责创建管道的 Agent：
+
+```text
+你是 {{creatorName}}，你负责发起并推进一个 Lightning A2A Chat 点对点协作管道。当前 channelName 是「{{channelName}}」，对端名字是「{{peerName}}」。
+第一步调用 create_channel，参数使用 channelName="{{channelName}}"、creatorName="{{creatorName}}"、peerName="{{peerName}}"。
+如果返回 created=false，就直接沿用现有管道。
+创建成功后，把返回里的 peerInviteText 原样转发给 {{peerName}}。
+开始工作前先调用 get_messages 读取最近 10 条上下文并记住 latestMessageId；之后固定每 1 分钟调用一次 get_messages，并带上 sinceMessageId=上次看到的 latestMessageId 做增量轮询。
+需要同步进展时调用 send_message，消息保持简短、明确、可执行。
+```
+
+### Peer Agent 提示词
+
+如果你不想依赖 `create_channel` 的返回文案，也可以直接把这段模板贴给对端 Agent：
+
+```text
+你是 {{peerName}}，{{creatorName}} 已经创建了一个名字叫「{{channelName}}」的 Lightning A2A Chat 管道。
+请你连接到这个管道，并在管道内和 {{creatorName}} 讨论、同步并推进后续决定。
+开始工作前先调用 get_messages 读取最近 10 条上下文并记住 latestMessageId；之后固定每 1 分钟调用一次 get_messages，并带上 sinceMessageId=上次看到的 latestMessageId 做增量轮询。
+需要同步进展时调用 send_message，消息保持简短、明确、可执行。
+```
+
 ## 推荐调用流程
 
-1. 先调用 `create_channel`
-2. Agent 启动时调用一次 `get_messages`，读取最近 10 条上下文
-3. 发送时调用 `send_message`
-4. 轮询时调用 `get_messages(channelName, sinceMessageId=上次看到的 latestMessageId)`
+1. 把上面的 `Creator Agent 提示词` 发给创建方 Agent
+2. Creator Agent 调用 `create_channel` 后，会返回一段可直接转发的 `peerInviteText`
+3. 把 `peerInviteText` 原样发给另一位 Agent，让它接入同一个 `channelName`
+4. 两边启动时都先调用一次 `get_messages(limit=10)` 恢复上下文
+5. 后续两边都按 `sinceMessageId=上次看到的 latestMessageId` 做增量轮询
 
-推荐轮询间隔：5 到 10 秒。
+推荐轮询间隔：1 分钟。这样更容易直接挂到分钟级 cron / heartbeat。
 
 ## 工具说明
 
@@ -169,7 +211,8 @@ npm test
     "fileKey": "4167656e74e696b9e6a188e5bc80e58f91",
     "createdAt": "2026-04-20T15:00:00.000Z"
   },
-  "peerInviteText": "你是后端，前端已经创建了一个名字叫「Agent方案开发」的 Lightning A2A Chat 管道。请你连接到这个管道，在管道内和TA讨论并推进后续决定。"
+  "creatorPromptText": "你是前端，你负责发起并推进一个 Lightning A2A Chat 点对点协作管道。当前 channelName 是「Agent方案开发」，对端名字是「后端」。第一步调用 create_channel，参数使用 channelName=\"Agent方案开发\"、creatorName=\"前端\"、peerName=\"后端\"。如果返回 created=false，就直接沿用现有管道。创建成功后，把返回里的 peerInviteText 原样转发给后端。开始工作前先调用 get_messages 读取最近 10 条上下文并记住 latestMessageId；之后固定每 1 分钟调用一次 get_messages，并带上 sinceMessageId=上次看到的 latestMessageId 做增量轮询。推荐使用 1 分钟，是为了更容易直接挂到分钟级 cron / heartbeat。需要同步进展时调用 send_message，消息保持简短、明确、可执行。",
+  "peerInviteText": "你是后端，前端已经创建了一个名字叫「Agent方案开发」的 Lightning A2A Chat 管道。请你连接到这个管道，并在管道内和前端讨论、同步并推进后续决定。开始工作前先调用 get_messages 读取最近 10 条上下文并记住 latestMessageId；之后固定每 1 分钟调用一次 get_messages，并带上 sinceMessageId=上次看到的 latestMessageId 做增量轮询。推荐使用 1 分钟，是为了更容易直接挂到分钟级 cron / heartbeat。需要同步进展时调用 send_message，消息保持简短、明确、可执行。"
 }
 ```
 
@@ -353,11 +396,11 @@ async function callTool(sessionId, name, args, id) {
 
 ## 本地调试建议
 
-- 第一个 Agent 固定身份，例如 `后端`
-- 第二个 Agent 固定身份，例如 `前端`
-- 共享同一个 `channelName`
-- 首次进入会话时先拉最近消息
-- 后续用 `sinceMessageId` 做增量轮询
+- 先把 `Creator Agent 提示词` 发给创建方 Agent
+- 再把 `peerInviteText` 或 `Peer Agent 提示词` 发给对端 Agent
+- 两边共享同一个 `channelName`
+- 首次进入会话时先拉最近 10 条消息
+- 后续固定每 1 分钟用 `sinceMessageId` 做增量轮询
 
 ## 限制
 

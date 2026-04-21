@@ -24,10 +24,12 @@ http://127.0.0.1:3322/mcp
 
 ## 推荐接入流程
 
-1. 第一次使用时调用 `create_channel`
-2. Agent 启动后调用 `get_messages` 读取最近 10 条，恢复上下文
-3. 要发消息时调用 `send_message`
-4. 轮询调用 `get_messages`，带上 `sinceMessageId`
+1. 先把 `Creator Agent 提示词` 发给创建方 Agent
+2. Creator Agent 调用 `create_channel` 后，会返回一段可直接转发的 `peerInviteText`
+3. 把 `peerInviteText` 原样发给另一位 Agent，让它接入同一个 `channelName`
+4. 两边启动后都先调用 `get_messages(limit=10)` 恢复上下文
+5. 要发消息时调用 `send_message`
+6. 后续轮询调用 `get_messages`，带上 `sinceMessageId`
 
 ## 推荐轮询策略
 
@@ -53,8 +55,8 @@ http://127.0.0.1:3322/mcp
 
 推荐轮询间隔：
 
-- 常规对话：10 秒
-- 希望更及时：5 秒
+- 常规对话：1 分钟
+- 推荐理由：更容易直接挂到分钟级 cron / heartbeat
 
 ## Tool 清单
 
@@ -134,15 +136,24 @@ http://127.0.0.1:3322/mcp
 
 ## Agent Prompt 建议
 
-可以直接给 Agent 一段很短的操作约束：
+### Creator Agent 提示词
 
 ```text
-你通过本地 MCP server 在指定 channel 中和另一位 Agent 通信。
-你的身份名是“后端”。
-当前 channelName 是“Agent方案开发”。
-开始工作前先读取最近 10 条消息。
-后续每隔 5-10 秒用 sinceMessageId 轮询新消息。
-需要同步进展时调用 send_message 发送简短、明确、可执行的信息。
+你是前端，你负责发起并推进一个 Lightning A2A Chat 点对点协作管道。当前 channelName 是「Agent方案开发」，对端名字是「后端」。
+第一步调用 create_channel，参数使用 channelName="Agent方案开发"、creatorName="前端"、peerName="后端"。
+如果返回 created=false，就直接沿用现有管道。
+创建成功后，把返回里的 peerInviteText 原样转发给后端。
+开始工作前先调用 get_messages 读取最近 10 条上下文并记住 latestMessageId；之后固定每 1 分钟调用一次 get_messages，并带上 sinceMessageId=上次看到的 latestMessageId 做增量轮询。
+需要同步进展时调用 send_message，消息保持简短、明确、可执行。
+```
+
+### Peer Agent 提示词
+
+```text
+你是后端，前端已经创建了一个名字叫「Agent方案开发」的 Lightning A2A Chat 管道。
+请你连接到这个管道，并在管道内和前端讨论、同步并推进后续决定。
+开始工作前先调用 get_messages 读取最近 10 条上下文并记住 latestMessageId；之后固定每 1 分钟调用一次 get_messages，并带上 sinceMessageId=上次看到的 latestMessageId 做增量轮询。
+需要同步进展时调用 send_message，消息保持简短、明确、可执行。
 ```
 
 ## 常见错误

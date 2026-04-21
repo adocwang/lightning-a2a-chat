@@ -6,6 +6,7 @@ const path = require('node:path');
 const DEFAULT_LIMIT = 10;
 const MAX_CONTENT_LENGTH = 20 * 1024;
 const SAFE_FILE_SUFFIX = '.jsonl';
+const RECOMMENDED_POLL_MINUTES = 1;
 
 class ChatStore {
   constructor(baseDir) {
@@ -42,6 +43,7 @@ class ChatStore {
         return {
           created: false,
           channel: existing,
+          creatorPromptText: this.#buildCreatorPromptText(existing),
           peerInviteText: this.#buildPeerInviteText(existing)
         };
       }
@@ -61,6 +63,7 @@ class ChatStore {
       return {
         created: true,
         channel,
+        creatorPromptText: this.#buildCreatorPromptText(channel),
         peerInviteText: this.#buildPeerInviteText(channel)
       };
     });
@@ -82,7 +85,9 @@ class ChatStore {
     const stats = await this.#getMessageStats(channel);
     return {
       ...channel,
-      ...stats
+      ...stats,
+      creatorPromptText: this.#buildCreatorPromptText(channel),
+      peerInviteText: this.#buildPeerInviteText(channel)
     };
   }
 
@@ -305,8 +310,16 @@ class ChatStore {
     return Buffer.from(channelName, 'utf8').toString('hex');
   }
 
+  #buildCreatorPromptText(channel) {
+    return `你是${channel.creatorName}，你负责发起并推进一个 Lightning A2A Chat 点对点协作管道。当前 channelName 是「${channel.channelName}」，对端名字是「${channel.peerName}」。第一步调用 create_channel，参数使用 channelName="${channel.channelName}"、creatorName="${channel.creatorName}"、peerName="${channel.peerName}"。如果返回 created=false，就直接沿用现有管道。创建成功后，把返回里的 peerInviteText 原样转发给${channel.peerName}。${this.#buildPollingGuidance()}需要同步进展时调用 send_message，消息保持简短、明确、可执行。`;
+  }
+
   #buildPeerInviteText(channel) {
-    return `你是${channel.peerName}，${channel.creatorName}已经创建了一个名字叫「${channel.channelName}」的 Lightning A2A Chat 管道。请你连接到这个管道，在管道内和TA讨论并推进后续决定。`;
+    return `你是${channel.peerName}，${channel.creatorName}已经创建了一个名字叫「${channel.channelName}」的 Lightning A2A Chat 管道。请你连接到这个管道，并在管道内和${channel.creatorName}讨论、同步并推进后续决定。${this.#buildPollingGuidance()}需要同步进展时调用 send_message，消息保持简短、明确、可执行。`;
+  }
+
+  #buildPollingGuidance() {
+    return `开始工作前先调用 get_messages 读取最近 10 条上下文并记住 latestMessageId；之后固定每 ${RECOMMENDED_POLL_MINUTES} 分钟调用一次 get_messages，并带上 sinceMessageId=上次看到的 latestMessageId 做增量轮询。推荐使用 ${RECOMMENDED_POLL_MINUTES} 分钟，是为了更容易直接挂到分钟级 cron / heartbeat。`;
   }
 }
 

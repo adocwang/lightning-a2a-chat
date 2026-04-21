@@ -253,6 +253,67 @@ button.danger {
   line-height: 1.6;
 }
 
+.prompt-section {
+  margin-top: 28px;
+}
+
+.prompt-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.prompt-card {
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(29, 26, 22, 0.08);
+  box-shadow: var(--shadow);
+}
+
+.prompt-card-creator {
+  background: linear-gradient(180deg, rgba(15, 118, 110, 0.08), rgba(255, 252, 245, 0.98));
+}
+
+.prompt-card-peer {
+  background: linear-gradient(180deg, rgba(14, 116, 144, 0.08), rgba(255, 252, 245, 0.98));
+}
+
+.prompt-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.prompt-note,
+.prompt-tip {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.prompt-note {
+  font-size: 13px;
+}
+
+.prompt-tip {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.prompt-block {
+  margin: 14px 0 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(27, 26, 23, 0.96);
+  color: #f7f0e3;
+  font-family: "SFMono-Regular", "Menlo", "Monaco", monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow: auto;
+}
+
 .messages-wrap {
   margin-top: 28px;
 }
@@ -328,5 +389,9 @@ button.danger {
 
   .message-list {
     max-height: none;
+  }
+
+  .prompt-grid {
+    grid-template-columns: 1fr;
   }
 }

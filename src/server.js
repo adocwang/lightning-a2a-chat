@@ -38,7 +38,7 @@ function buildServer() {
     'create_channel',
     {
       title: 'Create Channel',
-      description: 'Create a unique point-to-point chat channel. Parameters: channelName = pipe name, creatorName = creator role name, peerName = the other side role name.',
+      description: 'Create a unique point-to-point chat channel and return ready-to-paste creator/peer prompts. Parameters: channelName = pipe name, creatorName = creator role name, peerName = the other side role name.',
       inputSchema: {
         channelName: z.string().min(1).describe('channelName: unique pipe name.'),
         creatorName: z.string().min(1).describe('creatorName: the role name creating this channel.'),
