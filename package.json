@@ -1,5 +1,5 @@
 {
-  "name": "a2a_hole",
+  "name": "lightning-a2a-chat",
   "version": "1.0.0",
   "description": "Local HTTP MCP server for point-to-point agent communication",
   "main": "src/server.js",
@@ -19,6 +19,14 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/adocwang/lightning-a2a-chat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adocwang/lightning-a2a-chat/issues"
+  },
+  "homepage": "https://github.com/adocwang/lightning-a2a-chat#readme",
   "engines": {
     "node": ">=20"
   },

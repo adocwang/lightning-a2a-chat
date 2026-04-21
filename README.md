@@ -1,4 +1,4 @@
-# A2A Hole
+# Lightning A2A Chat
 
 本地运行的 HTTP MCP server，用来给两个 Agent 建立点对点聊天管道。  
 面向可信本地环境，默认不做鉴权、不做群聊，目标是提供一个足够轻、足够直接的 agent-to-agent 通讯层。
@@ -123,7 +123,7 @@ npm test
 ```json
 {
   "mcpServers": {
-    "a2a-chat": {
+    "lightning-a2a-chat": {
       "transport": "http",
       "url": "http://127.0.0.1:3322/mcp"
     }
@@ -169,7 +169,7 @@ npm test
     "fileKey": "4167656e74e696b9e6a188e5bc80e58f91",
     "createdAt": "2026-04-20T15:00:00.000Z"
   },
-  "peerInviteText": "你是后端，前端已经创建了一个名字叫「Agent方案开发」的a2a-chat管道。请你连接到这个管道，在管道内和TA讨论并推进后续决定。"
+  "peerInviteText": "你是后端，前端已经创建了一个名字叫「Agent方案开发」的 Lightning A2A Chat 管道。请你连接到这个管道，在管道内和TA讨论并推进后续决定。"
 }
 ```
 

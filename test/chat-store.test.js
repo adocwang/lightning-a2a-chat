@@ -9,7 +9,7 @@ const path = require('node:path');
 const { ChatStore } = require('../src/chat-store.js');
 
 async function createTempStore() {
-  const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), 'a2a-hole-test-'));
+  const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), 'lightning-a2a-chat-test-'));
   const store = new ChatStore(baseDir);
   await store.init();
   return { baseDir, store };

@@ -24,7 +24,7 @@ const transports = {};
 function buildServer() {
   const server = new McpServer(
     {
-      name: 'a2a-chat-local',
+      name: 'lightning-a2a-chat',
       version: '1.0.0'
     },
     {
@@ -306,7 +306,7 @@ async function main() {
       process.exit(1);
     }
 
-    console.log(`A2A Hole UI: http://${HOST}:${PORT}/ui/`);
+    console.log(`Lightning A2A Chat UI: http://${HOST}:${PORT}/ui/`);
     console.log(`MCP endpoint: http://${HOST}:${PORT}/mcp`);
     console.log(`Data directory: ${DATA_DIR}`);
   });

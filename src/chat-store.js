@@ -306,7 +306,7 @@ class ChatStore {
   }
 
   #buildPeerInviteText(channel) {
-    return `你是${channel.peerName}，${channel.creatorName}已经创建了一个名字叫「${channel.channelName}」的a2a-chat管道。请你连接到这个管道，在管道内和TA讨论并推进后续决定。`;
+    return `你是${channel.peerName}，${channel.creatorName}已经创建了一个名字叫「${channel.channelName}」的 Lightning A2A Chat 管道。请你连接到这个管道，在管道内和TA讨论并推进后续决定。`;
   }
 }
 

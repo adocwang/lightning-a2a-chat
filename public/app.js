@@ -21,7 +21,7 @@ const deleteButtonEl = document.querySelector('#deleteButton');
 
 const configPayload = {
   mcpServers: {
-    'a2a-chat': {
+    'lightning-a2a-chat': {
       transport: 'http',
       url: `${window.location.origin}/mcp`
     }
