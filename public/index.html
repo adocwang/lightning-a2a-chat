@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A2A Hole Admin</title>
+    <link rel="stylesheet" href="/ui/styles.css">
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="sidebar-head">
+          <div>
+            <p class="eyebrow">Local Admin</p>
+            <h1>A2A Hole</h1>
+          </div>
+          <button id="refreshButton" class="secondary">刷新</button>
+        </div>
+        <div class="sidebar-meta">
+          <span id="channelCount">0 个管道</span>
+          <span>浏览地址 /ui/</span>
+        </div>
+        <section class="config-card">
+          <div class="config-head">
+            <div>
+              <p class="eyebrow">MCP Config</p>
+              <h3>接入配置</h3>
+            </div>
+            <div class="config-actions">
+              <button id="toggleConfigButton" class="ghost">展开</button>
+              <button id="copyConfigButton" class="secondary">复制</button>
+            </div>
+          </div>
+          <div id="configBody" class="config-body hidden">
+            <p class="config-tip">把下面这段直接放进你的 Agent MCP server 配置里。</p>
+            <pre id="configBlock" class="config-block"></pre>
+          </div>
+        </section>
+        <div id="channelList" class="channel-list"></div>
+      </aside>
+
+      <main class="content">
+        <section id="emptyState" class="panel empty-state">
+          <p class="eyebrow">No Selection</p>
+          <h2>选择一个管道</h2>
+          <p>左侧会显示当前全部管道。选中后可以查看消息，并删除整个管道。</p>
+        </section>
+
+        <section id="channelDetail" class="panel hidden">
+          <div class="detail-head">
+            <div>
+              <p class="eyebrow">Channel</p>
+              <h2 id="detailName"></h2>
+              <p id="detailMeta" class="detail-meta"></p>
+            </div>
+            <div class="detail-actions">
+              <button id="refreshDetailButton" class="secondary">刷新</button>
+              <button id="deleteButton" class="danger">删除管道</button>
+            </div>
+          </div>
+
+          <div class="messages-wrap">
+            <div class="messages-head">
+              <h3>消息记录</h3>
+              <span id="messageCount">0 条消息</span>
+            </div>
+            <div id="messageList" class="message-list"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/ui/app.js" defer></script>
+  </body>
+  </html>
